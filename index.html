@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BubblyDialer • Cold-Calling & Web Design Sales CRM</title>
+  
+  <!-- PWA & Mobile Web App Meta -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#FF477E">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="BubblyDialer">
+  
+  <!-- Google Fonts: Plus Jakarta Sans & Fredoka -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Canvas Confetti for Deal Celebrations -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Fredoka"', 'cursive', 'sans-serif'],
+          },
+          colors: {
+            coral: {
+              400: '#FF6B8B',
+              500: '#FF477E',
+              600: '#E02660',
+            },
+            mint: {
+              400: '#2DD4BF',
+              500: '#10B981',
+              600: '#059669',
+            },
+            sunshine: {
+              400: '#FDE047',
+              500: '#FACC15',
+              600: '#EAB308',
+            },
+            lavender: {
+              300: '#E9D5FF',
+              400: '#C084FC',
+              500: '#A855F7',
+            },
+            sky: {
+              400: '#38BDF8',
+              500: '#0EA5E9',
+            },
+            bubbleDark: '#1E293B',
+          },
+          boxShadow: {
+            'bubbly': '0 6px 0 #0F172A',
+            'bubbly-sm': '0 4px 0 #0F172A',
+            'bubbly-lg': '0 9px 0 #0F172A',
+            'bubbly-coral': '0 6px 0 #9F1239',
+            'bubbly-mint': '0 6px 0 #065F46',
+            'bubbly-sun': '0 6px 0 #854D0E',
+            'bubbly-lavender': '0 6px 0 #581C87',
+            'clay': 'inset 0 3px 6px rgba(255,255,255,0.7), 0 8px 16px rgba(0,0,0,0.06)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Bubbly neobrutalist interactive styles */
+    body {
+      background-color: #F8FAFC;
+      background-image: radial-gradient(#CBD5E1 1.2px, transparent 1.2px);
+      background-size: 24px 24px;
+      color: #0F172A;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-bubbly {
+      transition: all 0.12s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .btn-bubbly:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #0F172A !important;
+    }
+
+    /* Custom Scrollbar for sleek mobile/desktop view */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F1F5F9;
+      border-radius: 8px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 8px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+
+    /* Bounce pulse animation */
+    @keyframes bubblyBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    .animate-bubbly-bounce {
+      animation: bubblyBounce 2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen pb-24">
+
+  <!-- TOP GAMIFIED STREAK & HEADER BAR -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b-2 border-slate-900 px-4 py-3 shadow-sm">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
+      
+      <!-- Brand & Mascot -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 bg-sunshine-400 border-2 border-slate-900 rounded-2xl flex items-center justify-center shadow-bubbly-sm font-display text-2xl animate-bubbly-bounce cursor-pointer" onclick="playPopSound(); confettiBurst();" title="Click for celebratory sparks!">
+            ⚡
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="font-display text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+                Bubbly<span class="text-coral-500">Dialer</span>
+              </h1>
+              <span class="text-xs bg-coral-100 text-coral-600 font-bold px-2 py-0.5 rounded-full border border-coral-300">
+                Web Sales CRM
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 font-medium hidden sm:block">
+              Turn cold Google listings into closed website deals!
+            </p>
+          </div>
+        </div>
+
+        <!-- Mobile Quick Trigger for Add / Intercept -->
+        <div class="flex items-center gap-2 md:hidden">
+          <button onclick="openInterceptModal()" class="btn-bubbly bg-coral-500 hover:bg-coral-600 text-white font-bold p-2.5 rounded-2xl border-2 border-slate-900 shadow-bubbly-sm flex items-center gap-1.5 text-xs">
+            <i data-lucide="phone-call" class="w-4 h-4"></i>
+            <span>Intercept</span>
+          </button>
+          <button onclick="openSettingsModal()" class="p-2.5 rounded-2xl border-2 border-slate-900 bg-slate-100 hover:bg-slate-200">
+            <i data-lucide="settings" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Gamified Call Goal & Streak Widget -->
+      <div class="flex items-center gap-3 bg-slate-50 border-2 border-slate-900 rounded-2xl p-2 px-3 shadow-bubbly-sm">
+        
+        <!-- Streak Flame -->
+        <div class="flex items-center gap-1.5 pr-3 border-r-2 border-slate-200">
+          <span class="text-xl">🔥</span>
+          <div>
+            <div class="text-[10px] uppercase font-extrabold tracking-wider text-slate-400">Streak</div>
+            <div id="streakDaysDisplay" class="font-display font-bold text-base text-slate-900 leading-tight">7 Days</div>
+          </div>
+        </div>
+
+        <!-- Calls Today Progress -->
+        <div class="flex-1 min-w-[140px] sm:min-w-[180px]">
+          <div class="flex items-center justify-between text-xs font-bold mb-1">
+            <span class="text-slate-600 flex items-center gap-1">
+              <i data-lucide="phone-outgoing" class="w-3 h-3 text-coral-500"></i>
+              Daily Target
+            </span>
+            <span id="callProgressRatio" class="text-coral-500 font-extrabold">12/20</span>
+          </div>
+          <div class="w-full bg-slate-200 rounded-full h-3 border border-slate-800 p-0.5 overflow-hidden">
+            <div id="callProgressBar" class="bg-gradient-to-r from-sunshine-400 to-coral-500 h-full rounded-full transition-all duration-500" style="width: 60%"></div>
+          </div>
+        </div>
+
+        <!-- Sound Toggle & Settings (Desktop) -->
+        <div class="hidden md:flex items-center gap-2 pl-2 border-l-2 border-slate-200">
+          <button id="soundToggleBtn" onclick="toggleSound()" class="p-2 rounded-xl border border-slate-300 hover:bg-white text-slate-700 transition" title="Toggle audio feedback">
+            <i data-lucide="volume-2" class="w-4 h-4"></i>
+          </button>
+          <button onclick="openSettingsModal()" class="p-2 rounded-xl border border-slate-300 hover:bg-white text-slate-700 transition" title="Settings & Android Setup">
+            <i data-lucide="settings" class="w-4 h-4"></i>
+          </button>
+          <button onclick="openInterceptModal()" class="btn-bubbly bg-coral-500 hover:bg-coral-600 text-white font-bold py-1.5 px-3 rounded-xl border-2 border-slate-900 shadow-bubbly-sm flex items-center gap-1.5 text-xs">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            <span>Simulate Call</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MOTIVATIONAL BANNER -->
+  <div class="max-w-6xl mx-auto px-4 mt-4">
+    <div class="bg-sunshine-400 border-2 border-slate-900 rounded-3xl p-3.5 sm:p-4 shadow-bubbly flex flex-col sm:flex-row items-center justify-between gap-3 relative overflow-hidden">
+      <div class="flex items-center gap-3 z-10">
+        <span class="text-3xl">🎯</span>
+        <div>
+          <h2 class="font-display font-bold text-slate-900 text-sm sm:text-base">
+            Pro Tip: 83% of businesses with NO website close on the first pitch!
+          </h2>
+          <p class="text-xs text-slate-800 font-medium">
+            Find local shops on Google Maps ➔ Tap Call ➔ Pitch our pre-made 3-page package.
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 z-10 w-full sm:w-auto justify-end">
+        <button onclick="openScriptDrawer()" class="btn-bubbly bg-white text-slate-900 font-bold text-xs py-2 px-3.5 rounded-2xl border-2 border-slate-900 shadow-bubbly-sm flex items-center gap-1.5 whitespace-nowrap">
+          <i data-lucide="book-open" class="w-3.5 h-3.5 text-coral-500"></i>
+          Sales Scripts & Objections
+        </button>
+        <button onclick="openAndroidGuideModal()" class="btn-bubbly bg-slate-900 text-white font-bold text-xs py-2 px-3.5 rounded-2xl border-2 border-slate-900 shadow-bubbly-sm flex items-center gap-1.5 whitespace-nowrap">
+          <i data-lucide="smartphone" class="w-3.5 h-3.5 text-mint-400"></i>
+          Android Dialer Guide
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CRM INTERFACE -->
+  <main class="max-w-6xl mx-auto px-4 mt-6">
+    
+    <!-- CONTROLS & PIPELINE STATS -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      
+      <!-- Stage Filter Pills -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+        <button onclick="filterByStage('ALL')" class="stage-pill active-pill btn-bubbly text-xs font-bold px-3.5 py-2 rounded-2xl border-2 border-slate-900 bg-slate-900 text-white shadow-bubbly-sm whitespace-nowrap" data-stage="ALL">
+          All Leads (<span id="count-ALL">0</span>)
+        </button>
+        <button onclick="filterByStage('NEW')" class="stage-pill btn-bubbly text-xs font-bold px-3.5 py-2 rounded-2xl border-2 border-slate-900 bg-white text-slate-800 shadow-bubbly-sm whitespace-nowrap" data-stage="NEW">
+          🆕 New (<span id="count-NEW">0</span>)
+        </button>
+        <button onclick="filterByStage('NO_ANSWER')" class="stage-pill btn-bubbly text-xs font-bold px-3.5 py-2 rounded-2xl border-2 border-slate-900 bg-white text-slate-800 shadow-bubbly-sm whitespace-nowrap" data-stage="NO_ANSWER">
+          📞 No Answer (<span id="count-NO_ANSWER">0</span>)
+        </button>
+        <button onclick="filterByStage('PITCHED')" class="stage-pill btn-bubbly text-xs font-bold px-3.5 py-2 rounded-2xl border-2 border-slate-900 bg-white text-slate-800 shadow-bubbly-sm whitespace-nowrap" data-stage="PITCHED">
+          🚀 Pitched (<span id="count-PITCHED">0</span>)
+        </button>
+        <button onclick="filterByStage('FOLLOWUP')" class="stage-pill btn-bubbly text-xs font-bold px-3.5 py-2 rounded-2xl border-2 border-slate-900 bg-white text-slate-800 shadow-bubbly-sm whitespace-nowrap" data-stage="FOLLOWUP">
+          ⏰ Follow-Up (<span id="count-FOLLOWUP">0</span>)
+        </button>
+        <button onclick="filterByStage('CLOSED')" class="stage-pill btn-bubbly text-xs font-bold px-3.5 py-2 rounded-2xl border-2 border-slate-900 bg-white text-slate-800 shadow-bubbly-sm whitespace-nowrap" data-stage="CLOSED">
+          🎉 Closed (<span id="count-CLOSED">0</span>)
+        </button>
+        <button onclick="filterByStage('REJECTED')" class="stage-pill btn-bubbly text-xs font-bold px-3.5 py-2 rounded-2xl border-2 border-slate-900 bg-white text-slate-800 shadow-bubbly-sm whitespace-nowrap" data-stage="REJECTED">
+          🙅 Not Interested (<span id="count-REJECTED">0</span>)
+        </button>
+      </div>
+
+      <!-- Search & New Lead Input -->
+      <div class="flex items-center gap-2">
+        <div class="relative flex-1 sm:w-64">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="Search business, niche, phone..." class="w-full pl-9 pr-3 py-2 text-xs font-bold bg-white border-2 border-slate-900 rounded-2xl focus:outline-none focus:ring-2 focus:ring-coral-400 shadow-bubbly-sm">
+        </div>
+        <button onclick="openInterceptModal()" class="btn-bubbly bg-mint-500 hover:bg-mint-600 text-white font-bold px-3 py-2 text-xs rounded-2xl border-2 border-slate-900 shadow-bubbly-sm flex items-center gap-1.5 whitespace-nowrap">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>Add Lead</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- LEADS GRID / CARDS -->
+    <div id="leadsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <!-- Injected via JavaScript -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="hidden text-center py-16 px-4 bg-white border-2 border-dashed border-slate-300 rounded-3xl mt-4">
+      <div class="w-20 h-20 bg-lavender-300 border-2 border-slate-900 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-bubbly-sm">
+        🔍
+      </div>
+      <h3 class="font-display text-lg font-bold text-slate-800">No leads found in this view</h3>
+      <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">
+        Ready to make some sales? Click below to intercept a new business call or simulate a Google Maps lookup!
+      </p>
+      <button onclick="openInterceptModal()" class="btn-bubbly bg-coral-500 text-white font-bold py-2.5 px-5 rounded-2xl border-2 border-slate-900 shadow-bubbly-sm text-xs">
+        + Simulate Incoming Business Call
+      </button>
+    </div>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: DUAL-ACTION CALL INTERCEPTION & LEAD CAPTURE MODAL -->
+  <!-- ======================================================== -->
+  <div id="interceptModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden">
+    <div class="bg-white border-3 border-slate-900 rounded-[28px] max-w-lg w-full p-5 sm:p-6 shadow-bubbly-lg max-h-[90vh] overflow-y-auto">
+      
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between gap-3 pb-3 border-b-2 border-slate-100">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-coral-500 border-2 border-slate-900 rounded-2xl flex items-center justify-center text-white text-2xl shadow-bubbly-sm">
+            📞
+          </div>
+          <div>
+            <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-sunshine-400 border border-slate-900 text-slate-900">
+              ⚡ Intercepted Call
+            </span>
+            <h3 class="font-display text-xl font-bold text-slate-900 leading-tight mt-0.5">
+              Call Interceptor & Dial
+            </h3>
+          </div>
+        </div>
+        <button onclick="closeInterceptModal()" class="w-8 h-8 rounded-xl border-2 border-slate-900 bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 font-bold">
+          ✕
+        </button>
+      </div>
+
+      <!-- Smart Google Maps Link & Live Places Lookup -->
+      <div class="my-4 p-3.5 bg-slate-50 border-2 border-slate-900 rounded-2xl shadow-sm">
+        <div class="text-[11px] font-extrabold text-slate-800 mb-1.5 flex items-center justify-between">
+          <span class="flex items-center gap-1.5">
+            <span class="text-sm">📍</span> Google Maps Link / Quick Importer:
+          </span>
+          <span id="lookupStatusText" class="text-[10px] text-slate-500 font-semibold">Paste link or type name</span>
+        </div>
+        <div class="flex gap-2">
+          <input type="text" id="quickImportInput" placeholder="Paste Maps link, business name, or +phone..." class="flex-1 px-3 py-2 text-xs font-semibold bg-white border-2 border-slate-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-coral-400">
+          <button type="button" onclick="autoImportFromInput()" id="autoImportBtn" class="btn-bubbly bg-sunshine-400 hover:bg-sunshine-500 text-slate-900 font-bold px-3 py-2 rounded-xl border-2 border-slate-900 text-xs shadow-bubbly-sm flex items-center gap-1 whitespace-nowrap">
+            <span>⚡ Import</span>
+          </button>
+        </div>
+        <p class="text-[10px] text-slate-500 mt-1.5">
+          Tip: Tap "Share" on any Google Maps listing ➔ Copy link ➔ Paste here to auto-fill business name, website & phone!
+        </p>
+      </div>
+
+      <!-- Lead Input Form -->
+      <form id="interceptForm" onsubmit="handleLeadSubmit(event)" class="space-y-3.5">
+        <input type="hidden" id="leadId">
+        
+        <div>
+          <label class="block text-xs font-extrabold text-slate-700 mb-1">Business Name *</label>
+          <input type="text" id="leadBusinessName" required placeholder="e.g. Bella Roma Italian Bistro" class="w-full px-3.5 py-2.5 text-xs font-bold bg-white border-2 border-slate-900 rounded-xl focus:ring-2 focus:ring-coral-400 focus:outline-none">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-extrabold text-slate-700 mb-1">Phone Number *</label>
+            <input type="tel" id="leadPhone" required placeholder="e.g. +14155552671" class="w-full px-3.5 py-2.5 text-xs font-bold bg-white border-2 border-slate-900 rounded-xl focus:ring-2 focus:ring-coral-400 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-extrabold text-slate-700 mb-1">Niche / Category</label>
+            <input type="text" id="leadNiche" placeholder="e.g. Restaurant, Dental, Salon" class="w-full px-3.5 py-2.5 text-xs font-bold bg-white border-2 border-slate-900 rounded-xl focus:ring-2 focus:ring-coral-400 focus:outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-extrabold text-slate-700 mb-1">Current Website URL</label>
+            <input type="text" id="leadWebsite" placeholder="Leave blank if NONE!" oninput="checkWebsiteField(this.value)" class="w-full px-3.5 py-2.5 text-xs font-bold bg-white border-2 border-slate-900 rounded-xl focus:ring-2 focus:ring-coral-400 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-extrabold text-slate-700 mb-1">Google Rating & Reviews</label>
+            <input type="text" id="leadReviews" placeholder="e.g. 4.7 ⭐ (64 reviews)" class="w-full px-3.5 py-2.5 text-xs font-bold bg-white border-2 border-slate-900 rounded-xl focus:ring-2 focus:ring-coral-400 focus:outline-none">
+          </div>
+        </div>
+
+        <!-- Big No Website Warning Banner -->
+        <div id="noWebsiteBadge" class="p-2.5 bg-rose-50 border-2 border-coral-500 rounded-2xl flex items-center gap-2 text-xs font-bold text-coral-700">
+          <span class="text-xl">🚨</span>
+          <div>
+            <div class="font-extrabold">GOLDEN LEAD: NO WEBSITE DETECTED!</div>
+            <div class="text-[11px] font-normal text-coral-600">This business is paying for local foot traffic but losing 70% of mobile customers. Pitch high-value redesign!</div>
+          </div>
+        </div>
+
+        <!-- Smart Website Audit Tags Selector -->
+        <div>
+          <label class="block text-xs font-extrabold text-slate-700 mb-1.5">
+            Smart Website Audit Badges (Tap to toggle):
+          </label>
+          <div class="flex flex-wrap gap-1.5" id="auditTagsPicker">
+            <span onclick="toggleAuditBadge(this, 'No Website')" class="audit-tag-btn cursor-pointer text-xs font-bold px-2.5 py-1 rounded-xl border border-slate-800 bg-white text-slate-700 hover:bg-slate-100 transition">
+              ❌ No Website
+            </span>
+            <span onclick="toggleAuditBadge(this, 'Not Mobile Friendly')" class="audit-tag-btn cursor-pointer text-xs font-bold px-2.5 py-1 rounded-xl border border-slate-800 bg-white text-slate-700 hover:bg-slate-100 transition">
+              📱 Not Mobile Friendly
+            </span>
+            <span onclick="toggleAuditBadge(this, 'Slow / No SSL')" class="audit-tag-btn cursor-pointer text-xs font-bold px-2.5 py-1 rounded-xl border border-slate-800 bg-white text-slate-700 hover:bg-slate-100 transition">
+              🐢 Slow / No SSL
+            </span>
+            <span onclick="toggleAuditBadge(this, 'Outdated Design')" class="audit-tag-btn cursor-pointer text-xs font-bold px-2.5 py-1 rounded-xl border border-slate-800 bg-white text-slate-700 hover:bg-slate-100 transition">
+              🕸️ Outdated (Flash/2010)
+            </span>
+            <span onclick="toggleAuditBadge(this, 'Has Facebook Only')" class="audit-tag-btn cursor-pointer text-xs font-bold px-2.5 py-1 rounded-xl border border-slate-800 bg-white text-slate-700 hover:bg-slate-100 transition">
+              📸 Facebook Only
+            </span>
+            <span onclick="toggleAuditBadge(this, 'No Online Booking')" class="audit-tag-btn cursor-pointer text-xs font-bold px-2.5 py-1 rounded-xl border border-slate-800 bg-white text-slate-700 hover:bg-slate-100 transition">
+              🛒 No Online Booking
+            </span>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div>
+          <label class="block text-xs font-extrabold text-slate-700 mb-1">Quick Call Notes</label>
+          <textarea id="leadNotes" rows="2" placeholder="Owner name, gatekeeper notes, what they sounded like..." class="w-full px-3.5 py-2 text-xs font-semibold bg-white border-2 border-slate-900 rounded-xl focus:ring-2 focus:ring-coral-400 focus:outline-none"></textarea>
+        </div>
+
+        <!-- DUAL-ACTION CALL BUTTONS -->
+        <div class="pt-2 border-t-2 border-slate-100 space-y-2.5">
+          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider text-center">
+            Choose Dial Action:
+          </div>
+          
+          <div class="grid grid-cols-2 gap-3">
+            <!-- 1. Native Cellular Call -->
+            <button type="button" onclick="executeNativeCall()" class="btn-bubbly bg-coral-500 hover:bg-coral-600 text-white font-display font-bold py-3 px-3 rounded-2xl border-2 border-slate-900 shadow-bubbly flex flex-col items-center justify-center gap-1 text-center">
+              <div class="flex items-center gap-1.5 text-sm">
+                <i data-lucide="phone" class="w-4 h-4"></i>
+                <span>Cellular Call</span>
+              </div>
+              <span class="text-[10px] font-sans font-normal opacity-90">
+                Launches native phone dialer
+              </span>
+            </button>
+
+            <!-- 2. WhatsApp Direct (No Contact Saving) -->
+            <button type="button" onclick="executeWhatsAppDirect()" class="btn-bubbly bg-mint-500 hover:bg-mint-600 text-white font-display font-bold py-3 px-3 rounded-2xl border-2 border-slate-900 shadow-bubbly flex flex-col items-center justify-center gap-1 text-center">
+              <div class="flex items-center gap-1.5 text-sm">
+                <i data-lucide="message-circle" class="w-4 h-4"></i>
+                <span>WhatsApp Direct</span>
+              </div>
+              <span class="text-[10px] font-sans font-normal opacity-90">
+                wa.me chat without saving!
+              </span>
+            </button>
+          </div>
+
+          <button type="submit" class="btn-bubbly w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-xl border-2 border-slate-900 text-xs flex items-center justify-center gap-1.5">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            <span>Save Lead to Pipeline (Without Dialing)</span>
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: 1-CLICK WHATSAPP FOLLOW-UP GENERATOR -->
+  <!-- ======================================================== -->
+  <div id="whatsAppModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden">
+    <div class="bg-white border-3 border-slate-900 rounded-[28px] max-w-lg w-full p-5 sm:p-6 shadow-bubbly-lg max-h-[90vh] overflow-y-auto">
+      
+      <div class="flex items-start justify-between gap-3 pb-3 border-b-2 border-slate-100">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 bg-mint-500 border-2 border-slate-900 rounded-2xl flex items-center justify-center text-white text-xl shadow-bubbly-sm">
+            💬
+          </div>
+          <div>
+            <h3 class="font-display text-xl font-bold text-slate-900 leading-tight">
+              1-Click WhatsApp Follow-Up
+            </h3>
+            <p id="waProspectName" class="text-xs text-slate-500 font-semibold">
+              Sending to: Tony's Pizza (+14155552671)
+            </p>
+          </div>
+        </div>
+        <button onclick="closeWhatsAppModal()" class="w-8 h-8 rounded-xl border-2 border-slate-900 bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 font-bold">
+          ✕
+        </button>
+      </div>
+
+      <!-- Quick Template Selector -->
+      <div class="my-4">
+        <label class="block text-xs font-extrabold text-slate-700 mb-2">Select Pitch Template:</label>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="applyWaTemplate('noWebsite')" class="wa-template-btn p-2 rounded-xl border-2 border-slate-900 bg-sunshine-400 text-slate-900 font-bold text-xs text-left shadow-bubbly-sm">
+            🚨 No-Website Pitch
+          </button>
+          <button onclick="applyWaTemplate('mockupPreview')" class="wa-template-btn p-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-800 font-bold text-xs text-left">
+            🎨 Free Homepage Mockup
+          </button>
+          <button onclick="applyWaTemplate('mobileAudit')" class="wa-template-btn p-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-800 font-bold text-xs text-left">
+            📱 Mobile Redesign Pitch
+          </button>
+          <button onclick="applyWaTemplate('postCallPortfolio')" class="wa-template-btn p-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-800 font-bold text-xs text-left">
+            📁 Portfolio + Calendly Link
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Editable Message Box -->
+      <div class="mb-4">
+        <div class="flex items-center justify-between mb-1">
+          <label class="text-xs font-extrabold text-slate-700">Personalized Message Preview:</label>
+          <span class="text-[11px] text-slate-400 font-medium">wa.me ready</span>
+        </div>
+        <textarea id="waMessageText" rows="6" class="w-full p-3 text-xs font-medium bg-slate-50 border-2 border-slate-900 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-mint-500"></textarea>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-3">
+        <button onclick="copyWaText()" class="btn-bubbly flex-1 bg-white hover:bg-slate-100 text-slate-900 font-bold py-3 rounded-2xl border-2 border-slate-900 shadow-bubbly-sm text-xs flex items-center justify-center gap-2">
+          <i data-lucide="copy" class="w-4 h-4"></i>
+          <span id="copyBtnText">Copy Text</span>
+        </button>
+        <button onclick="launchWhatsAppLink()" class="btn-bubbly flex-[2] bg-mint-500 hover:bg-mint-600 text-white font-display font-bold py-3 rounded-2xl border-2 border-slate-900 shadow-bubbly-mint text-sm flex items-center justify-center gap-2">
+          <i data-lucide="send" class="w-4 h-4"></i>
+          <span>Launch WhatsApp Chat</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- FLOATING IN-CALL SCRIPT & OBJECTION DRAWER -->
+  <!-- ======================================================== -->
+  <div id="scriptDrawer" class="fixed inset-y-0 right-0 z-50 max-w-md w-full bg-white border-l-3 border-slate-900 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+    
+    <!-- Drawer Header -->
+    <div class="p-4 bg-coral-500 border-b-2 border-slate-900 text-white flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 bg-white text-coral-500 rounded-xl border border-slate-900 flex items-center justify-center font-bold text-lg">
+          🎙️
+        </div>
+        <div>
+          <h3 class="font-display font-bold text-base">In-Call Sales Cheatsheet</h3>
+          <p class="text-[11px] text-coral-100">Live pitch script & snappy objection destroyers</p>
+        </div>
+      </div>
+      <button onclick="closeScriptDrawer()" class="w-8 h-8 rounded-xl bg-white/20 hover:bg-white/30 text-white flex items-center justify-center font-bold">
+        ✕
+      </button>
+    </div>
+
+    <!-- Script Navigation Tabs -->
+    <div class="flex border-b-2 border-slate-200 bg-slate-50 p-1.5 gap-1 text-xs font-bold">
+      <button onclick="switchScriptTab('hook')" id="tabBtnHook" class="script-tab active-script-tab flex-1 py-1.5 rounded-xl border border-slate-900 bg-white shadow-sm text-slate-900">
+        15-Sec Hook
+      </button>
+      <button onclick="switchScriptTab('mockup')" id="tabBtnMockup" class="script-tab flex-1 py-1.5 rounded-xl text-slate-600 hover:bg-white">
+        Free Mockup Angle
+      </button>
+      <button onclick="switchScriptTab('objections')" id="tabBtnObjections" class="script-tab flex-1 py-1.5 rounded-xl text-slate-600 hover:bg-white">
+        Objections (5)
+      </button>
+    </div>
+
+    <!-- Script Content Body -->
+    <div class="p-4 overflow-y-auto flex-1 space-y-4 text-xs">
+      
+      <!-- TAB 1: 15-SEC HOOK -->
+      <div id="tabContentHook" class="space-y-3">
+        <div class="p-3 bg-sunshine-50 border-2 border-sunshine-500 rounded-2xl">
+          <div class="font-extrabold text-slate-900 mb-1 flex items-center gap-1.5">
+            <span class="text-base">⚡</span> Opening Line (No Small Talk)
+          </div>
+          <p class="text-slate-700 leading-relaxed font-medium">
+            "Hey <span class="bg-sunshine-200 px-1 rounded font-bold">[Owner Name/Manager]</span>, my name is Alex. I'm a local web designer here in town. I was looking up <span class="bg-sunshine-200 px-1 rounded font-bold">[Niche, e.g. Italian restaurants]</span> on Google Maps and noticed you guys have over 50 great reviews, but your listing doesn't have a website button. Are you guys currently taking new online orders / bookings?"
+          </p>
+        </div>
+
+        <div class="p-3 bg-slate-50 border-2 border-slate-200 rounded-2xl">
+          <div class="font-extrabold text-slate-900 mb-1">🎯 The Value Proposition:</div>
+          <p class="text-slate-700 leading-relaxed font-medium">
+            "Most owners don't realize that 70% of people who find you on Maps tap away if they can't see a modern menu or booking page immediately. I build fast, clean 3-page sites specifically for local shops so you capture those customers without paying crazy monthly retainers."
+          </p>
+        </div>
+      </div>
+
+      <!-- TAB 2: FREE MOCKUP ANGLE -->
+      <div id="tabContentMockup" class="hidden space-y-3">
+        <div class="p-3 bg-lavender-50 border-2 border-lavender-400 rounded-2xl">
+          <div class="font-extrabold text-purple-950 mb-1 flex items-center gap-1.5">
+            <span class="text-base">🎨</span> The Risk-Free Mockup Close
+          </div>
+          <p class="text-slate-800 leading-relaxed font-medium">
+            "I don't expect you to hire me blind. What if I put together a custom, clean modern homepage mockup for <span class="bg-lavender-200 px-1 rounded font-bold">[Business Name]</span> tonight, text it to you on WhatsApp, and if you hate it, you don't owe me a dime? What's your best cell number to text the preview?"
+          </p>
+        </div>
+      </div>
+
+      <!-- TAB 3: OBJECTION DESTROYERS -->
+      <div id="tabContentObjections" class="hidden space-y-3">
+        
+        <!-- Objection 1 -->
+        <div class="border-2 border-slate-900 rounded-2xl overflow-hidden shadow-bubbly-sm">
+          <div class="bg-slate-900 text-white font-bold p-2.5 flex items-center justify-between cursor-pointer" onclick="toggleObjection(1)">
+            <span>"We just use Instagram or Facebook"</span>
+            <span class="text-xs">▼</span>
+          </div>
+          <div id="objAns1" class="p-3 bg-white text-slate-700 font-medium">
+            "Social media is awesome for existing fans, but Google is where people go when they have their wallet out searching for <em>'[Niche] near me'</em> right now. Without a site, Google ranks your competitors above you. A quick 1-page site routes all that traffic to your Instagram anyway!"
+          </div>
+        </div>
+
+        <!-- Objection 2 -->
+        <div class="border-2 border-slate-900 rounded-2xl overflow-hidden shadow-bubbly-sm">
+          <div class="bg-slate-900 text-white font-bold p-2.5 flex items-center justify-between cursor-pointer" onclick="toggleObjection(2)">
+            <span>"I don't have the budget right now"</span>
+            <span class="text-xs">▼</span>
+          </div>
+          <div id="objAns2" class="p-3 bg-white text-slate-700 font-medium">
+            "Completely understand—times are tough for local businesses. That's why I do a simple flat fee with zero monthly software traps. If the new site brings in just 2 extra customers a month, it pays for itself completely. Let me send a quick free mockup first!"
+          </div>
+        </div>
+
+        <!-- Objection 3 -->
+        <div class="border-2 border-slate-900 rounded-2xl overflow-hidden shadow-bubbly-sm">
+          <div class="bg-slate-900 text-white font-bold p-2.5 flex items-center justify-between cursor-pointer" onclick="toggleObjection(3)">
+            <span>"Just send me an email"</span>
+            <span class="text-xs">▼</span>
+          </div>
+          <div id="objAns3" class="p-3 bg-white text-slate-700 font-medium">
+            "I definitely can, but I know how busy your inbox gets with spam. Can I just shoot you a quick 2-photo preview on WhatsApp with my portfolio? It'll take you 10 seconds to glance at between shifts."
+          </div>
+        </div>
+
+        <!-- Objection 4 -->
+        <div class="border-2 border-slate-900 rounded-2xl overflow-hidden shadow-bubbly-sm">
+          <div class="bg-slate-900 text-white font-bold p-2.5 flex items-center justify-between cursor-pointer" onclick="toggleObjection(4)">
+            <span>"We already have a web guy"</span>
+            <span class="text-xs">▼</span>
+          </div>
+          <div id="objAns4" class="p-3 bg-white text-slate-700 font-medium">
+            "Great! Has he updated your site for mobile phones lately? When I opened your site on my phone, the menu was broken and it didn't have an SSL lock. Would love to send you a 1-minute video audit you can pass to him or let me fix it in 24 hours."
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Quick Dismiss -->
+    <div class="p-3 border-t-2 border-slate-200 bg-slate-50">
+      <button onclick="closeScriptDrawer()" class="btn-bubbly w-full py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl border border-slate-400 text-xs">
+        Close Cheatsheet
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: SETTINGS & FREELANCER CONFIGURATION -->
+  <!-- ======================================================== -->
+  <div id="settingsModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden">
+    <div class="bg-white border-3 border-slate-900 rounded-[28px] max-w-md w-full p-5 sm:p-6 shadow-bubbly-lg max-h-[90vh] overflow-y-auto">
+      
+      <div class="flex items-start justify-between gap-3 pb-3 border-b-2 border-slate-100">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 bg-sunshine-400 border-2 border-slate-900 rounded-2xl flex items-center justify-center text-xl shadow-bubbly-sm">
+            ⚙️
+          </div>
+          <div>
+            <h3 class="font-display text-xl font-bold text-slate-900">CRM Settings</h3>
+            <p class="text-xs text-slate-500 font-medium">Configure portfolio & dialer options</p>
+          </div>
+        </div>
+        <button onclick="closeSettingsModal()" class="w-8 h-8 rounded-xl border-2 border-slate-900 bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-bold">
+          ✕
+        </button>
+      </div>
+
+      <div class="space-y-3.5 my-4">
+        <div>
+          <label class="block text-xs font-extrabold text-slate-700 mb-1">Your Freelance/Agency Name</label>
+          <input type="text" id="settingMyName" placeholder="e.g. Alex Rivera • Horizon Web Studio" class="w-full px-3 py-2 text-xs font-bold border-2 border-slate-900 rounded-xl focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-extrabold text-slate-700 mb-1">Your Portfolio Website Link</label>
+          <input type="url" id="settingPortfolioUrl" placeholder="https://mywebstudio.com/work" class="w-full px-3 py-2 text-xs font-bold border-2 border-slate-900 rounded-xl focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-extrabold text-slate-700 mb-1">Your Booking/Calendly Link</label>
+          <input type="url" id="settingCalendlyUrl" placeholder="https://calendly.com/alex-design/15min" class="w-full px-3 py-2 text-xs font-bold border-2 border-slate-900 rounded-xl focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-extrabold text-slate-700 mb-1">Daily Call Target (Calls/Day)</label>
+          <input type="number" id="settingDailyTarget" value="20" class="w-full px-3 py-2 text-xs font-bold border-2 border-slate-900 rounded-xl focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-extrabold text-slate-700 mb-1">Google Places API Key (Optional)</label>
+          <input type="text" id="settingPlacesApiKey" placeholder="AIzaSy... (For reverse phone lookups)" class="w-full px-3 py-2 text-xs font-bold border-2 border-slate-900 rounded-xl focus:outline-none">
+          <p class="text-[10px] text-slate-400 mt-1">If blank, our smart simulator auto-detects place data automatically.</p>
+        </div>
+
+        <!-- Export / Import & Reset -->
+        <div class="pt-3 border-t-2 border-slate-100 flex items-center justify-between gap-2">
+          <button onclick="exportLeadsJson()" class="btn-bubbly text-xs font-bold py-1.5 px-3 bg-slate-100 hover:bg-slate-200 border border-slate-800 rounded-xl">
+            Export JSON
+          </button>
+          <button onclick="document.getElementById('importFileInput').click()" class="btn-bubbly text-xs font-bold py-1.5 px-3 bg-slate-100 hover:bg-slate-200 border border-slate-800 rounded-xl">
+            Import JSON
+          </button>
+          <input type="file" id="importFileInput" onchange="importLeadsJson(event)" class="hidden" accept=".json">
+          <button onclick="resetDemoData()" class="btn-bubbly text-xs font-bold py-1.5 px-3 bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-300 rounded-xl">
+            Reset Demo
+          </button>
+        </div>
+      </div>
+
+      <button onclick="saveSettings()" class="btn-bubbly w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl border-2 border-slate-900 text-xs">
+        Save Settings
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: ANDROID NATIVE INTENT & DIALER SETUP GUIDE -->
+  <!-- ======================================================== -->
+  <div id="androidGuideModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden">
+    <div class="bg-white border-3 border-slate-900 rounded-[28px] max-w-xl w-full p-5 sm:p-6 shadow-bubbly-lg max-h-[90vh] overflow-y-auto">
+      
+      <div class="flex items-start justify-between gap-3 pb-3 border-b-2 border-slate-100">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 bg-mint-500 border-2 border-slate-900 rounded-2xl flex items-center justify-center text-white text-xl shadow-bubbly-sm">
+            🤖
+          </div>
+          <div>
+            <h3 class="font-display text-xl font-bold text-slate-900">
+              Android Call Interceptor Setup
+            </h3>
+            <p class="text-xs text-slate-500 font-medium">How to make this app intercept Google Maps "Call" clicks</p>
+          </div>
+        </div>
+        <button onclick="closeAndroidGuideModal()" class="w-8 h-8 rounded-xl border-2 border-slate-900 bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-bold">
+          ✕
+        </button>
+      </div>
+
+      <div class="space-y-4 my-4 text-xs text-slate-700">
+        
+        <div class="p-3 bg-amber-50 border-2 border-amber-300 rounded-2xl">
+          <div class="font-bold text-amber-900 text-sm mb-1">How Call Interception Works on Android:</div>
+          <p class="font-medium text-amber-800">
+            When you tap "Call" on a business card in Google Maps or Chrome, Android broadcasts an Intent with the <code>tel:</code> URI scheme. By registering an intent filter in your app's <code>AndroidManifest.xml</code>, Android will show BubblyDialer in the "Open with / Complete action using" sheet!
+          </p>
+        </div>
+
+        <div>
+          <div class="font-bold text-slate-900 text-sm mb-1">1. `AndroidManifest.xml` Intent Filter Configuration:</div>
+          <p class="text-slate-500 mb-2">Add this inside your main <code>&lt;activity&gt;</code> in React Native, Flutter, or Capacitor:</p>
+          <pre class="bg-slate-900 text-slate-100 p-3 rounded-2xl overflow-x-auto text-[11px] font-mono leading-relaxed border-2 border-slate-800"><code>&lt;!-- Intercept standard dialer tel: links from Google Maps &amp; Chrome --&gt;
+&lt;intent-filter&gt;
+    &lt;action android:name="android.intent.action.DIAL" /&gt;
+    &lt;action android:name="android.intent.action.VIEW" /&gt;
+    &lt;category android:name="android.intent.category.DEFAULT" /&gt;
+    &lt;category android:name="android.intent.category.BROWSABLE" /&gt;
+    &lt;data android:scheme="tel" /&gt;
+&lt;/intent-filter&gt;
+
+&lt;!-- Intercept "Share from Google Maps" to capture business place link --&gt;
+&lt;intent-filter&gt;
+    &lt;action android:name="android.intent.action.SEND" /&gt;
+    &lt;category android:name="android.intent.category.DEFAULT" /&gt;
+    &lt;data android:mimeType="text/plain" /&gt;
+&lt;/intent-filter&gt;</code></pre>
+        </div>
+
+        <div>
+          <div class="font-bold text-slate-900 text-sm mb-1">2. Required Permissions:</div>
+          <pre class="bg-slate-900 text-slate-100 p-3 rounded-2xl overflow-x-auto text-[11px] font-mono leading-relaxed border-2 border-slate-800"><code>&lt;uses-permission android:name="android.permission.CALL_PHONE" /&gt;
+&lt;uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /&gt;
+&lt;uses-permission android:name="android.permission.INTERNET" /&gt;</code></pre>
+        </div>
+
+        <div>
+          <div class="font-bold text-slate-900 text-sm mb-1">3. Automated Google Places Reverse Lookup:</div>
+          <p class="mb-2">When the phone number arrives in the intent, call Google Places Find Place API:</p>
+          <pre class="bg-slate-900 text-slate-100 p-3 rounded-2xl overflow-x-auto text-[11px] font-mono leading-relaxed border-2 border-slate-800"><code>https://maps.googleapis.com/maps/api/place/findplacefromtext/json
+  ?input=+14155552671
+  &amp;inputtype=phonenumber
+  &amp;fields=name,rating,user_ratings_total,website,types,formatted_phone_number
+  &amp;key=YOUR_API_KEY</code></pre>
+        </div>
+
+        <div class="p-3 bg-mint-50 border-2 border-mint-400 rounded-2xl">
+          <div class="font-bold text-emerald-900 mb-1">💡 Quick Mobile Testing on this Web App:</div>
+          <p class="font-medium text-emerald-800">
+            You can test this right now in your mobile browser! Simply append <code>?tel=+14155552671&name=LocalBakery</code> to this app's URL. It will automatically trigger the intercepted call modal!
+          </p>
+        </div>
+
+      </div>
+
+      <button onclick="closeAndroidGuideModal()" class="btn-bubbly w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl border-2 border-slate-900 text-xs">
+        Got it!
+      </button>
+
+    </div>
+  </div>
+
+  <!-- FLOATING QUICK ACTION BUTTON (Mobile Bottom) -->
+  <div class="fixed bottom-5 right-5 z-20 flex flex-col gap-2.5 items-end">
+    <button onclick="openScriptDrawer()" class="btn-bubbly bg-sunshine-400 hover:bg-sunshine-500 text-slate-900 p-3.5 rounded-full border-2 border-slate-900 shadow-bubbly flex items-center justify-center font-bold" title="Open Pitch Cheatsheet">
+      <i data-lucide="book-open" class="w-5 h-5"></i>
+    </button>
+    <button onclick="openInterceptModal()" class="btn-bubbly bg-coral-500 hover:bg-coral-600 text-white px-5 py-3.5 rounded-full border-2 border-slate-900 shadow-bubbly flex items-center gap-2 font-display font-bold text-sm tracking-wide">
+      <i data-lucide="phone-call" class="w-5 h-5"></i>
+      <span>Dial Lead</span>
+    </button>
+  </div>
+
+  <!-- JAVASCRIPT APPLICATION LOGIC -->
+  <script>
+    // ==========================================
+    // 1. STATE & STORAGE MANAGEMENT
+    // ==========================================
+    const STORAGE_KEY_LEADS = 'bubbly_crm_leads_v3';
+    const STORAGE_KEY_SETTINGS = 'bubbly_crm_settings_v3';
+    const STORAGE_KEY_STREAK = 'bubbly_crm_streak_v3';
+
+    let currentFilter = 'ALL';
+    let searchQuery = '';
+    let soundEnabled = true;
+    let activeWhatsAppLead = null;
+
+    // Real production database starts clean (no fake leads)
+    const DEFAULT_LEADS = [];
+
+    const DEFAULT_SETTINGS = {
+      myName: "",
+      portfolioUrl: "",
+      calendlyUrl: "",
+      dailyTarget: 20,
+      placesApiKey: ""
+    };
+
+    let leads = [];
+    let settings = {};
+    let streakData = { days: 1, lastDate: new Date().toDateString(), todayCalls: 0 };
+
+    // ==========================================
+    // 2. INITIALIZATION
+    // ==========================================
+    function initApp() {
+      // Load Leads
+      const savedLeads = localStorage.getItem(STORAGE_KEY_LEADS);
+      if (savedLeads) {
+        try { leads = JSON.parse(savedLeads); } catch(e) { leads = DEFAULT_LEADS; }
+      } else {
+        leads = DEFAULT_LEADS;
+        saveLeads();
+      }
+
+      // Load Settings
+      const savedSettings = localStorage.getItem(STORAGE_KEY_SETTINGS);
+      if (savedSettings) {
+        try { settings = { ...DEFAULT_SETTINGS, ...JSON.parse(savedSettings) }; } catch(e) { settings = DEFAULT_SETTINGS; }
+      } else {
+        settings = DEFAULT_SETTINGS;
+      }
+
+      // Load Streak
+      const savedStreak = localStorage.getItem(STORAGE_KEY_STREAK);
+      if (savedStreak) {
+        try { streakData = JSON.parse(savedStreak); } catch(e) {}
+      }
+
+      // Check URL parameters for instant intercepted call (e.g. ?tel=+1234567890&name=...)
+      checkUrlParamsForIntercept();
+
+      updateStreakDisplay();
+      renderLeads();
+      safeCreateIcons();
+    }
+
+    function safeCreateIcons() {
+      try {
+        if (typeof window.lucide !== 'undefined' && window.lucide && typeof window.lucide.createIcons === 'function') {
+          window.lucide.createIcons();
+        }
+      } catch (err) {
+        console.warn("Lucide icons warning:", err);
+      }
+    }
+
+    function saveLeads() {
+      localStorage.setItem(STORAGE_KEY_LEADS, JSON.stringify(leads));
+      renderLeads();
+    }
+
+    // ==========================================
+    // 3. AUDIO & CONFETTI SYNTHESIS (FAIL-SAFE)
+    // ==========================================
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        try {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            audioCtx = new AudioContextClass();
+          }
+        } catch(e) {}
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
+      return audioCtx;
+    }
+
+    function playPopSound() {
+      if (!soundEnabled) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      try {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(450, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.08);
+      } catch (e) {}
+    }
+
+    function playVictoryChime() {
+      if (!soundEnabled) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      try {
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, index) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + (index * 0.1));
+          gain.gain.setValueAtTime(0.2, ctx.currentTime + (index * 0.1));
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (index * 0.1) + 0.3);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + (index * 0.1));
+          osc.stop(ctx.currentTime + (index * 0.1) + 0.3);
+        });
+      } catch (e) {}
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById('soundToggleBtn');
+      btn.innerHTML = soundEnabled ? '<i data-lucide="volume-2" class="w-4 h-4"></i>' : '<i data-lucide="volume-x" class="w-4 h-4 text-rose-500"></i>';
+      safeCreateIcons();
+    }
+
+    function confettiBurst() {
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#FF477E', '#10B981', '#FACC15', '#A855F7', '#38BDF8']
+        });
+      }
+    }
+
+    function massiveVictoryCelebration() {
+      playVictoryChime();
+      if (typeof confetti === 'function') {
+        const count = 200;
+        const defaults = { origin: { y: 0.7 } };
+
+        function fire(particleRatio, opts) {
+          confetti(Object.assign({}, defaults, opts, {
+            particleCount: Math.floor(count * particleRatio)
+          }));
+        }
+
+        fire(0.25, { spread: 26, startVelocity: 55 });
+        fire(0.2, { spread: 60 });
+        fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+        fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+        fire(0.1, { spread: 120, startVelocity: 45 });
+      }
+    }
+
+    // ==========================================
+    // 4. STREAK & GOAL TRACKING
+    // ==========================================
+    function logCallAttempt() {
+      streakData.todayCalls++;
+      localStorage.setItem(STORAGE_KEY_STREAK, JSON.stringify(streakData));
+      updateStreakDisplay();
+      playPopSound();
+    }
+
+    function updateStreakDisplay() {
+      const target = settings.dailyTarget || 20;
+      const progressPercent = Math.min(100, Math.round((streakData.todayCalls / target) * 100));
+      
+      document.getElementById('streakDaysDisplay').textContent = `${streakData.days} Days`;
+      document.getElementById('callProgressRatio').textContent = `${streakData.todayCalls}/${target}`;
+      document.getElementById('callProgressBar').style.width = `${progressPercent}%`;
+    }
+
+    // ==========================================
+    // 5. RENDERING PIPELINE & LEADS
+    // ==========================================
+    function renderLeads() {
+      const container = document.getElementById('leadsContainer');
+      const emptyState = document.getElementById('emptyState');
+
+      // Update Counts
+      const counts = { ALL: leads.length, NEW: 0, NO_ANSWER: 0, PITCHED: 0, FOLLOWUP: 0, CLOSED: 0, REJECTED: 0 };
+      leads.forEach(l => { if (counts[l.stage] !== undefined) counts[l.stage]++; });
+      Object.keys(counts).forEach(k => {
+        const el = document.getElementById(`count-${k}`);
+        if (el) el.textContent = counts[k];
+      });
+
+      // Filter
+      let filtered = leads.filter(l => {
+        const matchesStage = currentFilter === 'ALL' || l.stage === currentFilter;
+        const q = searchQuery.toLowerCase();
+        const matchesSearch = !q || 
+          l.businessName.toLowerCase().includes(q) || 
+          (l.niche && l.niche.toLowerCase().includes(q)) || 
+          l.phone.toLowerCase().includes(q);
+        return matchesStage && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      emptyState.classList.add('hidden');
+
+      container.innerHTML = filtered.map(lead => {
+        const hasNoWebsite = !lead.website || lead.website.trim() === '';
+        const stageBadge = getStageBadge(lead.stage);
+
+        return `
+          <div class="bg-white border-3 border-slate-900 rounded-[26px] p-4 sm:p-5 shadow-bubbly transition hover:-translate-y-0.5 flex flex-col justify-between relative overflow-hidden">
+            
+            <!-- Lead Card Top -->
+            <div>
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <div>
+                  <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full border border-slate-900 ${stageBadge.bg} ${stageBadge.text}">
+                    ${stageBadge.label}
+                  </span>
+                  <span class="text-[10px] text-slate-500 font-bold ml-1.5">
+                    ${lead.niche || 'Local Business'}
+                  </span>
+                </div>
+                
+                <!-- Quick Lead Menu -->
+                <div class="flex items-center gap-1">
+                  <button onclick="editLead('${lead.id}')" class="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-900 transition" title="Edit Lead">
+                    <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <button onclick="deleteLead('${lead.id}')" class="p-1.5 hover:bg-rose-50 rounded-lg text-slate-400 hover:text-rose-600 transition" title="Delete">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Business Name -->
+              <h3 class="font-display font-bold text-base sm:text-lg text-slate-900 leading-snug">
+                ${escapeHtml(lead.businessName)}
+              </h3>
+
+              <!-- Phone & Rating -->
+              <div class="flex items-center gap-2 mt-1 text-xs font-semibold text-slate-600">
+                <span class="flex items-center gap-1">
+                  <i data-lucide="phone" class="w-3 h-3 text-coral-500"></i>
+                  ${lead.phone}
+                </span>
+                <span>•</span>
+                <span class="text-amber-600">${lead.reviews || '4.5 ⭐'}</span>
+              </div>
+
+              <!-- Website Flag -->
+              <div class="mt-2.5">
+                ${hasNoWebsite ? `
+                  <div class="inline-flex items-center gap-1.5 bg-rose-100 text-rose-700 border-2 border-rose-400 px-2.5 py-1 rounded-xl text-[11px] font-extrabold animate-pulse">
+                    <span>🚨 NO WEBSITE! (Top Opportunity)</span>
+                  </div>
+                ` : `
+                  <a href="${escapeHtml(lead.website)}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-[11px] font-bold text-sky-600 hover:underline">
+                    <i data-lucide="globe" class="w-3 h-3"></i>
+                    <span class="truncate max-w-[200px]">${escapeHtml(lead.website)}</span>
+                  </a>
+                `}
+              </div>
+
+              <!-- Audit Badges -->
+              <div class="flex flex-wrap gap-1 mt-3">
+                ${(lead.auditTags || []).map(tag => `
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg border border-slate-300 bg-slate-50 text-slate-700">
+                    ${escapeHtml(tag)}
+                  </span>
+                `).join('')}
+              </div>
+
+              <!-- Call Notes -->
+              ${lead.notes ? `
+                <div class="mt-3 p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600 font-medium line-clamp-3">
+                  "${escapeHtml(lead.notes)}"
+                </div>
+              ` : ''}
+
+              <!-- Scheduled Reminder -->
+              ${lead.reminder ? `
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] font-bold text-purple-700 bg-purple-50 border border-purple-200 px-2.5 py-1 rounded-xl">
+                  <i data-lucide="clock" class="w-3 h-3"></i>
+                  <span>Callback: ${escapeHtml(lead.reminder)}</span>
+                </div>
+              ` : ''}
+
+            </div>
+
+            <!-- Lead Card Bottom / Quick Action Buttons -->
+            <div class="mt-4 pt-3 border-t-2 border-slate-100 space-y-2">
+              
+              <!-- Quick Stage Switcher -->
+              <div class="flex items-center justify-between gap-1 text-[10px] font-bold">
+                <button onclick="setLeadStage('${lead.id}', 'NO_ANSWER')" class="flex-1 py-1 rounded-lg border border-slate-200 hover:bg-slate-100 ${lead.stage === 'NO_ANSWER' ? 'bg-slate-200' : ''}" title="No Answer">📞 Missed</button>
+                <button onclick="setLeadStage('${lead.id}', 'PITCHED')" class="flex-1 py-1 rounded-lg border border-slate-200 hover:bg-slate-100 ${lead.stage === 'PITCHED' ? 'bg-sunshine-200' : ''}" title="Pitched">🚀 Pitched</button>
+                <button onclick="quickScheduleModal('${lead.id}')" class="flex-1 py-1 rounded-lg border border-slate-200 hover:bg-slate-100 ${lead.stage === 'FOLLOWUP' ? 'bg-purple-200' : ''}" title="Follow-up">⏰ Callback</button>
+                <button onclick="setLeadStage('${lead.id}', 'CLOSED')" class="flex-1 py-1 rounded-lg border border-slate-900 bg-mint-400 text-slate-900 hover:bg-mint-500 font-extrabold" title="Deal Closed!">🎉 Won!</button>
+              </div>
+
+              <!-- Primary Dial Actions -->
+              <div class="grid grid-cols-2 gap-2">
+                <!-- Native Call -->
+                <a href="tel:${cleanNumber(lead.phone)}" onclick="logCallAttempt(); openInCallHud('${lead.id}')" class="btn-bubbly bg-coral-500 hover:bg-coral-600 text-white font-bold py-2 px-2 rounded-xl border-2 border-slate-900 shadow-bubbly-sm flex items-center justify-center gap-1.5 text-xs text-center">
+                  <i data-lucide="phone-outgoing" class="w-3.5 h-3.5"></i>
+                  <span>Call Now</span>
+                </a>
+
+                <!-- WhatsApp Follow-up -->
+                <button onclick="openWhatsAppModalForLead('${lead.id}')" class="btn-bubbly bg-mint-500 hover:bg-mint-600 text-white font-bold py-2 px-2 rounded-xl border-2 border-slate-900 shadow-bubbly-sm flex items-center justify-center gap-1.5 text-xs text-center">
+                  <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+                  <span>WhatsApp</span>
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        `;
+      }).join('');
+
+      safeCreateIcons();
+    }
+
+    function getStageBadge(stage) {
+      switch(stage) {
+        case 'NEW': return { label: '🆕 New Lead', bg: 'bg-blue-100', text: 'text-blue-800' };
+        case 'NO_ANSWER': return { label: '📞 No Answer', bg: 'bg-amber-100', text: 'text-amber-800' };
+        case 'PITCHED': return { label: '🚀 Pitched', bg: 'bg-purple-100', text: 'text-purple-800' };
+        case 'FOLLOWUP': return { label: '⏰ Callback', bg: 'bg-sky-100', text: 'text-sky-800' };
+        case 'CLOSED': return { label: '🎉 Deal Closed!', bg: 'bg-mint-400', text: 'text-slate-900 font-extrabold' };
+        case 'REJECTED': return { label: '🙅 Not Interested', bg: 'bg-slate-200', text: 'text-slate-600' };
+        default: return { label: stage, bg: 'bg-slate-100', text: 'text-slate-700' };
+      }
+    }
+
+    function filterByStage(stage) {
+      currentFilter = stage;
+      document.querySelectorAll('.stage-pill').forEach(btn => {
+        if (btn.getAttribute('data-stage') === stage) {
+          btn.classList.add('bg-slate-900', 'text-white');
+          btn.classList.remove('bg-white', 'text-slate-800');
+        } else {
+          btn.classList.remove('bg-slate-900', 'text-white');
+          btn.classList.add('bg-white', 'text-slate-800');
+        }
+      });
+      playPopSound();
+      renderLeads();
+    }
+
+    function handleSearch(query) {
+      searchQuery = query;
+      renderLeads();
+    }
+
+    // ==========================================
+    // 6. STAGE TRANSITIONS & ACTIONS
+    // ==========================================
+    function setLeadStage(id, newStage) {
+      const lead = leads.find(l => l.id === id);
+      if (!lead) return;
+      
+      lead.stage = newStage;
+      if (newStage === 'CLOSED') {
+        massiveVictoryCelebration();
+      } else {
+        playPopSound();
+      }
+      saveLeads();
+    }
+
+    function quickScheduleModal(id) {
+      const times = ['In 2 Hours', 'Tomorrow 10:00 AM', 'Next Monday'];
+      const chosen = prompt("Schedule Callback Reminder:\n1: In 2 Hours\n2: Tomorrow 10:00 AM\n3: Next Monday\n\nOr enter custom time:", "Tomorrow 10:00 AM");
+      if (chosen) {
+        const lead = leads.find(l => l.id === id);
+        if (lead) {
+          lead.reminder = chosen;
+          lead.stage = 'FOLLOWUP';
+          saveLeads();
+          playPopSound();
+        }
+      }
+    }
+
+    function deleteLead(id) {
+      if (confirm("Delete this lead from pipeline?")) {
+        leads = leads.filter(l => l.id !== id);
+        saveLeads();
+        playPopSound();
+      }
+    }
+
+    // ==========================================
+    // 7. CALL INTERCEPTION & FORM HANDLING
+    // ==========================================
+    function openInterceptModal(leadToEdit = null) {
+      const modal = document.getElementById('interceptModal');
+      const form = document.getElementById('interceptForm');
+      modal.classList.remove('hidden');
+
+      // Clear or populate
+      if (leadToEdit) {
+        document.getElementById('leadId').value = leadToEdit.id;
+        document.getElementById('leadBusinessName').value = leadToEdit.businessName || '';
+        document.getElementById('leadPhone').value = leadToEdit.phone || '';
+        document.getElementById('leadNiche').value = leadToEdit.niche || '';
+        document.getElementById('leadWebsite').value = leadToEdit.website || '';
+        document.getElementById('leadReviews').value = leadToEdit.reviews || '';
+        document.getElementById('leadNotes').value = leadToEdit.notes || '';
+      } else {
+        form.reset();
+        document.getElementById('leadId').value = '';
+      }
+      
+      checkWebsiteField(document.getElementById('leadWebsite').value);
+      playPopSound();
+    }
+
+    function closeInterceptModal() {
+      document.getElementById('interceptModal').classList.add('hidden');
+    }
+
+    function checkWebsiteField(val) {
+      const badge = document.getElementById('noWebsiteBadge');
+      if (!val || val.trim() === '') {
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    function toggleAuditBadge(el, tagText) {
+      el.classList.toggle('bg-coral-500');
+      el.classList.toggle('text-white');
+      el.classList.toggle('border-slate-900');
+      playPopSound();
+    }
+
+    async function autoImportFromInput() {
+      const input = (document.getElementById('quickImportInput').value || '').trim();
+      const statusText = document.getElementById('lookupStatusText');
+      if (!input) {
+        statusText.textContent = "Please paste a link, name, or phone!";
+        statusText.className = "text-[10px] text-rose-500 font-bold";
+        return;
+      }
+
+      statusText.textContent = "Analyzing input...";
+      statusText.className = "text-[10px] text-coral-500 font-bold animate-pulse";
+      playPopSound();
+
+      let detectedName = "";
+      let detectedPhone = "";
+
+      // 1. Check for phone number in string
+      const phoneMatch = input.match(/(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
+      if (phoneMatch) {
+        detectedPhone = phoneMatch[0];
+      }
+
+      // 2. Check for Google Maps URL or shared place text
+      if (input.includes('maps.google.') || input.includes('maps.app.goo.gl') || input.includes('google.com/maps')) {
+        const placeMatch = input.match(/\/place\/([^\/@]+)/);
+        if (placeMatch && placeMatch[1]) {
+          detectedName = decodeURIComponent(placeMatch[1].replace(/\+/g, ' '));
+        } else if (input.includes('·')) {
+          const parts = input.split('·');
+          detectedName = parts[0].trim();
+        }
+      } else if (!phoneMatch) {
+        detectedName = input;
+      }
+
+      // 3. Query Google Places API if API key is provided
+      if (settings.placesApiKey && (detectedPhone || detectedName)) {
+        try {
+          statusText.textContent = "Querying Google Places API...";
+          const query = detectedPhone || detectedName;
+          const isPhone = !!detectedPhone && !detectedName;
+          const inputType = isPhone ? 'phonenumber' : 'textquery';
+          const apiUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodeURIComponent(query)}&inputtype=${inputType}&fields=name,formatted_phone_number,rating,user_ratings_total,website,types,formatted_address&key=${settings.placesApiKey}`;
+          
+          const res = await fetch(apiUrl);
+          const data = await res.json();
+          if (data.status === 'OK' && data.candidates && data.candidates.length > 0) {
+            const place = data.candidates[0];
+            if (place.name) document.getElementById('leadBusinessName').value = place.name;
+            if (place.formatted_phone_number) document.getElementById('leadPhone').value = place.formatted_phone_number;
+            if (place.types && place.types.length > 0) {
+              document.getElementById('leadNiche').value = place.types[0].replace(/_/g, ' ');
+            }
+            if (place.rating) {
+              document.getElementById('leadReviews').value = `${place.rating} ⭐ (${place.user_ratings_total || 0} reviews)`;
+            }
+            document.getElementById('leadWebsite').value = place.website || '';
+            if (place.formatted_address) {
+              document.getElementById('leadNotes').value = `Address: ${place.formatted_address}`;
+            }
+
+            statusText.textContent = "Google Places details fetched! ✓";
+            statusText.className = "text-[10px] text-emerald-600 font-bold";
+            checkWebsiteField(document.getElementById('leadWebsite').value);
+            return;
+          }
+        } catch(apiErr) {
+          console.warn("Places API error:", apiErr);
+        }
+      }
+
+      // Fallback: fill whatever was parsed from the share link
+      if (detectedName) document.getElementById('leadBusinessName').value = detectedName;
+      if (detectedPhone) document.getElementById('leadPhone').value = detectedPhone;
+
+      statusText.textContent = detectedName ? "Imported from Maps! ✓" : "Number captured! Enter business name.";
+      statusText.className = "text-[10px] text-emerald-600 font-bold";
+      checkWebsiteField(document.getElementById('leadWebsite').value);
+    }
+
+    function getSelectedAuditBadges() {
+      const badges = [];
+      document.querySelectorAll('#auditTagsPicker .audit-tag-btn').forEach(btn => {
+        if (btn.classList.contains('bg-coral-500')) {
+          badges.push(btn.textContent.trim().replace(/^[^a-zA-Z]+/, ''));
+        }
+      });
+      return badges;
+    }
+
+    function handleLeadSubmit(e) {
+      if (e) e.preventDefault();
+      
+      const id = document.getElementById('leadId').value || 'lead-' + Date.now();
+      const businessName = document.getElementById('leadBusinessName').value.trim();
+      const phone = document.getElementById('leadPhone').value.trim();
+      const niche = document.getElementById('leadNiche').value.trim();
+      const website = document.getElementById('leadWebsite').value.trim();
+      const reviews = document.getElementById('leadReviews').value.trim();
+      const notes = document.getElementById('leadNotes').value.trim();
+      const auditTags = getSelectedAuditBadges();
+      if (!website && !auditTags.includes('No Website')) {
+        auditTags.unshift('No Website');
+      }
+
+      const existingIndex = leads.findIndex(l => l.id === id);
+      const leadData = {
+        id,
+        businessName,
+        phone,
+        niche: niche || 'Local Business',
+        website,
+        reviews: reviews || '4.5 ⭐',
+        stage: existingIndex >= 0 ? leads[existingIndex].stage : 'NEW',
+        auditTags,
+        notes,
+        createdAt: existingIndex >= 0 ? leads[existingIndex].createdAt : new Date().toISOString(),
+        reminder: existingIndex >= 0 ? leads[existingIndex].reminder : null
+      };
+
+      if (existingIndex >= 0) {
+        leads[existingIndex] = leadData;
+      } else {
+        leads.unshift(leadData);
+      }
+
+      saveLeads();
+      closeInterceptModal();
+      playPopSound();
+      return leadData;
+    }
+
+    function executeNativeCall() {
+      const phone = document.getElementById('leadPhone').value;
+      if (!phone) {
+        alert("Please enter a phone number first!");
+        return;
+      }
+      const savedLead = handleLeadSubmit();
+      logCallAttempt();
+      openInCallHud(savedLead ? savedLead.id : null);
+      window.location.href = `tel:${cleanNumber(phone)}`;
+    }
+
+    function executeWhatsAppDirect() {
+      const phone = document.getElementById('leadPhone').value;
+      if (!phone) {
+        alert("Please enter a phone number first!");
+        return;
+      }
+      const savedLead = handleLeadSubmit();
+      closeInterceptModal();
+      if (savedLead) {
+        openWhatsAppModalForLead(savedLead.id);
+      }
+    }
+
+    function editLead(id) {
+      const lead = leads.find(l => l.id === id);
+      if (lead) openInterceptModal(lead);
+    }
+
+    function openInCallHud(leadId) {
+      openScriptDrawer();
+    }
+
+    // ==========================================
+    // 8. 1-CLICK WHATSAPP DEEP LINKING
+    // ==========================================
+    function openWhatsAppModalForLead(leadId) {
+      activeWhatsAppLead = leads.find(l => l.id === leadId);
+      if (!activeWhatsAppLead) return;
+
+      document.getElementById('waProspectName').textContent = 
+        `Sending to: ${activeWhatsAppLead.businessName} (${activeWhatsAppLead.phone})`;
+
+      // Pick default template based on whether they have a website
+      const templateKey = (!activeWhatsAppLead.website || activeWhatsAppLead.website.trim() === '') 
+        ? 'noWebsite' 
+        : 'mobileAudit';
+
+      applyWaTemplate(templateKey);
+      document.getElementById('whatsAppModal').classList.remove('hidden');
+      playPopSound();
+    }
+
+    function closeWhatsAppModal() {
+      document.getElementById('whatsAppModal').classList.add('hidden');
+    }
+
+    function applyWaTemplate(type) {
+      if (!activeWhatsAppLead) return;
+      const bName = activeWhatsAppLead.businessName;
+      const niche = activeWhatsAppLead.niche || 'business';
+      const myName = settings.myName || 'Alex';
+      const portfolio = settings.portfolioUrl || 'https://alexrivera.design';
+      const calendly = settings.calendlyUrl || 'https://calendly.com';
+
+      let msg = '';
+      if (type === 'noWebsite') {
+        msg = `Hi ${bName} team! 👋\n\nI was looking for ${niche} options near me on Google Maps and saw your stellar reviews. But when I tapped to view your menu / prices, you didn't have a website listed!\n\nI design high-converting, mobile websites for local shops. Would love to send you a 100% free homepage mockup preview—no strings attached. What do you think?`;
+      } else if (type === 'mockupPreview') {
+        msg = `Hey ${bName}! 🚀\n\nFollowing up on my quick call—I put together a clean mobile design concept for your new website to help capture more online bookings from Google.\n\nYou can see some of my previous work here:\n${portfolio}\n\nDo you have 5 minutes this week for a quick look?`;
+      } else if (type === 'mobileAudit') {
+        msg = `Hi ${bName}! 👋\n\nI just checked your website on my smartphone and noticed the menu/booking is a bit hard to read on mobile screens, and the page took a few seconds to load.\n\nOver 70% of local customers browse on mobile now. I modernize websites to load in under 1 second and look gorgeous on iPhone & Android.\n\nHere are some live examples: ${portfolio}\n\nLet me know if you'd like a quick free redesign quote!`;
+      } else if (type === 'postCallPortfolio') {
+        msg = `Hi ${bName}, thanks so much for the quick chat earlier today!\n\nAs promised, here is the link to my design portfolio:\n📁 ${portfolio}\n\nWhenever you're ready to discuss bringing in more customers, feel free to grab a quick 10-min slot on my calendar:\n🗓️ ${calendly}\n\nBest,\n${myName}`;
+      }
+
+      document.getElementById('waMessageText').value = msg;
+    }
+
+    function launchWhatsAppLink() {
+      if (!activeWhatsAppLead) return;
+      const rawNumber = activeWhatsAppLead.phone;
+      const text = document.getElementById('waMessageText').value;
+      const cleanPhone = cleanWhatsAppNumber(rawNumber);
+
+      if (!cleanPhone) {
+        alert("Please ensure a valid phone number is set for this lead!");
+        return;
+      }
+
+      const encoded = encodeURIComponent(text);
+      const url = `https://wa.me/${cleanPhone}?text=${encoded}`;
+      
+      // Update stage to pitched
+      setLeadStage(activeWhatsAppLead.id, 'PITCHED');
+      closeWhatsAppModal();
+      window.open(url, '_blank');
+    }
+
+    function copyWaText() {
+      const text = document.getElementById('waMessageText').value;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copyBtnText');
+        btn.textContent = "Copied! ✓";
+        setTimeout(() => { btn.textContent = "Copy Text"; }, 2000);
+      });
+    }
+
+    // ==========================================
+    // 9. SCRIPTS & OBJECTIONS DRAWER
+    // ==========================================
+    function openScriptDrawer() {
+      document.getElementById('scriptDrawer').classList.remove('translate-x-full');
+      playPopSound();
+    }
+
+    function closeScriptDrawer() {
+      document.getElementById('scriptDrawer').classList.add('translate-x-full');
+    }
+
+    function switchScriptTab(tab) {
+      const tabs = ['hook', 'mockup', 'objections'];
+      tabs.forEach(t => {
+        const content = document.getElementById(`tabContent${t.charAt(0).toUpperCase() + t.slice(1)}`);
+        const btn = document.getElementById(`tabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
+        if (t === tab) {
+          content.classList.remove('hidden');
+          btn.classList.add('active-script-tab', 'border', 'border-slate-900', 'bg-white', 'shadow-sm', 'text-slate-900');
+          btn.classList.remove('text-slate-600');
+        } else {
+          content.classList.add('hidden');
+          btn.classList.remove('active-script-tab', 'border', 'border-slate-900', 'bg-white', 'shadow-sm', 'text-slate-900');
+          btn.classList.add('text-slate-600');
+        }
+      });
+      playPopSound();
+    }
+
+    function toggleObjection(index) {
+      const el = document.getElementById(`objAns${index}`);
+      el.classList.toggle('hidden');
+      playPopSound();
+    }
+
+    // ==========================================
+    // 10. SETTINGS & ANDROID GUIDE MODALS
+    // ==========================================
+    function openSettingsModal() {
+      document.getElementById('settingMyName').value = settings.myName || '';
+      document.getElementById('settingPortfolioUrl').value = settings.portfolioUrl || '';
+      document.getElementById('settingCalendlyUrl').value = settings.calendlyUrl || '';
+      document.getElementById('settingDailyTarget').value = settings.dailyTarget || 20;
+      document.getElementById('settingPlacesApiKey').value = settings.placesApiKey || '';
+      document.getElementById('settingsModal').classList.remove('hidden');
+      playPopSound();
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').classList.add('hidden');
+    }
+
+    function saveSettings() {
+      settings.myName = document.getElementById('settingMyName').value.trim();
+      settings.portfolioUrl = document.getElementById('settingPortfolioUrl').value.trim();
+      settings.calendlyUrl = document.getElementById('settingCalendlyUrl').value.trim();
+      settings.dailyTarget = parseInt(document.getElementById('settingDailyTarget').value) || 20;
+      settings.placesApiKey = document.getElementById('settingPlacesApiKey').value.trim();
+
+      localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
+      updateStreakDisplay();
+      closeSettingsModal();
+      playPopSound();
+    }
+
+    function openAndroidGuideModal() {
+      document.getElementById('androidGuideModal').classList.remove('hidden');
+      playPopSound();
+    }
+
+    function closeAndroidGuideModal() {
+      document.getElementById('androidGuideModal').classList.add('hidden');
+    }
+
+    function exportLeadsJson() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(leads, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `bubbly_crm_leads_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function importLeadsJson(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const parsed = JSON.parse(evt.target.result);
+          if (Array.isArray(parsed)) {
+            leads = parsed;
+            saveLeads();
+            alert("Leads imported successfully!");
+          }
+        } catch(err) {
+          alert("Invalid JSON file format");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetDemoData() {
+      if (confirm("Reset to default sample leads? (This will replace your current list)")) {
+        leads = DEFAULT_LEADS;
+        saveLeads();
+        closeSettingsModal();
+      }
+    }
+
+    // ==========================================
+    // 11. HELPER UTILITIES
+    // ==========================================
+    function cleanNumber(raw) {
+      return (raw || '').replace(/[^\d+]/g, '');
+    }
+
+    function cleanWhatsAppNumber(raw) {
+      let cleaned = (raw || '').replace(/\D/g, '');
+      cleaned = cleaned.replace(/^0+/, '');
+      return cleaned;
+    }
+
+    function escapeHtml(string) {
+      if (!string) return '';
+      return String(string)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function checkUrlParamsForIntercept() {
+      const params = new URLSearchParams(window.location.search);
+      const tel = params.get('tel') || params.get('phone');
+      const name = params.get('name') || params.get('business');
+      const share = params.get('share');
+      const action = params.get('action');
+
+      if (share) {
+        setTimeout(() => {
+          openInterceptModal();
+          const importInput = document.getElementById('quickImportInput');
+          if (importInput) {
+            importInput.value = decodeURIComponent(share);
+            autoImportFromInput();
+          }
+        }, 300);
+      } else if (tel) {
+        setTimeout(() => {
+          openInterceptModal();
+          document.getElementById('leadPhone').value = decodeURIComponent(tel);
+          if (name) document.getElementById('leadBusinessName').value = decodeURIComponent(name);
+        }, 300);
+      } else if (action === 'intercept') {
+        setTimeout(() => {
+          openInterceptModal();
+        }, 200);
+      }
+    }
+
+    // Register Service Worker for PWA (Installable App on Android)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => {
+          console.log('SW registration note:', err);
+        });
+      });
+    }
+
+    // Run on startup
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>

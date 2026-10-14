@@ -1,0 +1,14 @@
+{
+  "name": "bubblydialer-crm",
+  "version": "1.0.0",
+  "description": "Cold-Calling CRM & Dialer App",
+  "private": true,
+  "scripts": {
+    "build": "mkdir -p www && cp -f index.html manifest.json icon.svg sw.js www/ 2>/dev/null || true"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/core": "^6.0.0"
+  }
+}
