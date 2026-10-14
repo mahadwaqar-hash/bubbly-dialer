@@ -36,31 +36,28 @@ name: Build Android APK
           - name: Add Capacitor Android Platform
             run: npx cap add android
 
-          - name: Inject Custom Dialer &
-  Interceptor Configuration
+          - name: Inject Custom Dialer & Interceptor
+  Configuration
             run: |
               if [ -f "AndroidManifest.xml" ]; then
                 cp -f AndroidManifest.xml
   android/app/src/main/AndroidManifest.xml
-              elif [ -f "android-
-  custom/AndroidManifest.xml" ]; then
-                cp -f android-
-  custom/AndroidManifest.xml
+              elif [ -f "android-custom/AndroidManifest.xml" ];
+  then
+                cp -f android-custom/AndroidManifest.xml
   android/app/src/main/AndroidManifest.xml
               fi
-
               mkdir -p
   android/app/src/main/java/com/bubblydialer/crm/
               if [ -f "MainActivity.java" ]; then
                 cp -f MainActivity.java
-  android/app/src/main/java/com/bubblydialer/crm/Ma
-  inActivity.java
-              elif [ -f "android-
-  custom/MainActivity.java" ]; then
-                cp -f android-custom/MainActivity.
+  android/app/src/main/java/com/bubblydialer/crm/MainActivity.
   java
-  android/app/src/main/java/com/bubblydialer/crm/Ma
-  inActivity.java
+              elif [ -f "android-custom/MainActivity.java" ];
+  then
+                cp -f android-custom/MainActivity.java
+  android/app/src/main/java/com/bubblydialer/crm/MainActivity.
+  java
               fi
 
           - name: Sync Web Assets to Native Android
@@ -76,6 +73,6 @@ name: Build Android APK
             uses: actions/upload-artifact@v4
             with:
               name: BubblyDialer-Debug-APK
-              path:
-  android/app/build/outputs/apk/debug/app-debug.apk
+              path: android/app/build/outputs/apk/debug/app-
+  debug.apk
               retention-days: 30
